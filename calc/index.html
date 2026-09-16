@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="calculator">
+    <!-- Calculator Display -->
+    <div id="display" class="display">0</div>
+
+    <!-- Buttons Grid -->
+    <div class="buttons">
+      <button class="btn func" id="clear">AC</button>
+      <button class="btn func" id="backspace">⌫</button>
+      <button class="btn op" data-op="/">&divide;</button>
+      <button class="btn op" data-op="*">&times;</button>
+
+      <button class="btn num" data-num="7">7</button>
+      <button class="btn num" data-num="8">8</button>
+      <button class="btn num" data-num="9">9</button>
+      <button class="btn op" data-op="-">-</button>
+
+      <button class="btn num" data-num="4">4</button>
+      <button class="btn num" data-num="5">5</button>
+      <button class="btn num" data-num="6">6</button>
+      <button class="btn op" data-op="+">+</button>
+
+      <button class="btn num" data-num="1">1</button>
+      <button class="btn num" data-num="2">2</button>
+      <button class="btn num" data-num="3">3</button>
+      <button class="btn equal" id="equals">=</button>
+
+      <button class="btn num zero" data-num="0">0</button>
+      <button class="btn decimal" id="decimal">.</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Jumping game</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<main class="game-page">
+    	<audio id="background-music" src="assets/kirikou-soundtrack.wav" loop>
+            Your browser does not support the audio tag.
+    	</audio>
+		<section class="game-card" aria-labelledby="game-title">
+			<div class="game-header">
+				<div>
+					<h1 id="game-title">Mandombe Jump</h1>
+					<p>Press Space or Arrow Up to jump over the blocks.</p>
+				</div>
+				<div class="score-board" aria-live="polite">
+					Score: <span id="score">0</span>
+				</div>
+			</div>
+
+			<div id="game" class="game-canvas" role="application" aria-label="Jumping game area" tabindex="0">
+				<div class="sky-line"></div>
+				<canvas id="obstacleCanvas" class="obstacle-canvas" aria-hidden="true"></canvas>
+				<div id="player" class="player">
+				    <div class="player-face">
+						<div class="eyes">
+    						<div class="eye"></div>
+    				        <div class="eye"></div>
+						</div>
+						<div class="mouth">1</div>
+					</div>
+				</div>
+				<div class="ground"></div>
+				<div id="gameOver" class="game-over hidden">
+					<h2>Game Over</h2>
+					<p>Final score: <span id="finalScore">0</span></p>
+					<p>Best score: <span id="bestScoreSpan">0</span></p>
+					<button id="restartButton" type="button">Play again</button>
+				</div>
+				<div id="checkpoint" class="checkpoint" aria-live="polite">
+				    <p id="checkpointText">Checkpoint!!!</p>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script src="script.js"></script>
+</body>
+</html>
