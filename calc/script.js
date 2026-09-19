@@ -36,7 +36,7 @@ function operate(operator, a, b) {
 }
 
 const display = document.getElementById("display");
-const equationDisplay = document.getElementById("equation") || document.getElementById("previous-operand");
+const equationDisplay = document.getElementById("equation");
 
 let displayValue = "0";
 let firstOperand = null;
@@ -47,7 +47,7 @@ let isEvaluated = false;
 
 function roundResult(value) {
   if (typeof value === "string") return value;
-  return Math.round(value * 1000000) / 1000000;
+  return parseFloat(Number(value).toFixed(6));
 }
 
 function updateDisplay() {
@@ -96,7 +96,7 @@ function inputDecimal() {
 }
 
 function handleOperator(nextOperator) {
-  const displaySymbol = nextOperator === "*" ? "×" : nextOperator;
+  const displaySymbol = nextOperator === "*" ? "×" : (nextOperator === "/" ? "÷" : nextOperator);
 
   if (isEvaluated) {
     isEvaluated = false;
