@@ -11,7 +11,6 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
-  // avoid crashing when dividing by zero
   if (b === 0) {
     return "Nice try! 😉";
   }
@@ -36,42 +35,60 @@ function operate(operator, a, b) {
   }
 }
 
-// track calculator state
+const display = document.getElementById("display");
+const equationDisplay = document.getElementById("equation") || document.getElementById("previous-operand");
+
 let displayValue = "0";
 let firstOperand = null;
 let currentOperator = null;
 let waitingForSecondOperand = false;
+let equationValue = "";
+let isEvaluated = false;
 
-const display = document.getElementById("display");
-
-// keep long decimals from overflowing the screen
 function roundResult(value) {
   if (typeof value === "string") return value;
-  return Math.round(value * 10000000) / 10000000;
+  return Math.round(value * 1000000) / 1000000;
 }
 
 function updateDisplay() {
   display.textContent = displayValue;
+  if (equationDisplay) {
+    equationDisplay.textContent = equationValue;
+  }
 }
 
 function inputNumber(digit) {
+  if (isEvaluated) {
+    resetCalculator();
+  }
+
   if (waitingForSecondOperand) {
     displayValue = digit;
     waitingForSecondOperand = false;
   } else {
+    if (displayValue.includes(".")) {
+      const parts = displayValue.split(".");
+      if (parts[1] && parts[1].length >= 6) {
+        return;
+      }
+    }
     displayValue = displayValue === "0" ? digit : displayValue + digit;
   }
   updateDisplay();
 }
 
 function inputDecimal() {
+  if (isEvaluated) {
+    resetCalculator();
+  }
+
   if (waitingForSecondOperand) {
     displayValue = "0.";
     waitingForSecondOperand = false;
     updateDisplay();
     return;
   }
-  // only allow one dot per number
+
   if (!displayValue.includes(".")) {
     displayValue += ".";
     updateDisplay();
@@ -79,21 +96,34 @@ function inputDecimal() {
 }
 
 function handleOperator(nextOperator) {
-  const inputValue = displayValue;
+  const displaySymbol = nextOperator === "*" ? "×" : nextOperator;
 
-  // allow changing operator before typing second number
-  if (currentOperator && waitingForSecondOperand) {
+  if (isEvaluated) {
+    isEvaluated = false;
+    equationValue = displayValue + displaySymbol;
+    firstOperand = displayValue;
     currentOperator = nextOperator;
+    waitingForSecondOperand = true;
+    updateDisplay();
     return;
   }
 
-  if (firstOperand === null && !isNaN(inputValue)) {
-    firstOperand = inputValue;
+  if (currentOperator && waitingForSecondOperand) {
+    currentOperator = nextOperator;
+    equationValue = equationValue.slice(0, -1) + displaySymbol;
+    updateDisplay();
+    return;
+  }
+
+  if (firstOperand === null && !isNaN(displayValue)) {
+    firstOperand = displayValue;
+    equationValue = displayValue + displaySymbol;
   } else if (currentOperator) {
-    const result = operate(currentOperator, firstOperand, inputValue);
+    const result = operate(currentOperator, firstOperand, displayValue);
 
     if (typeof result === "string") {
       displayValue = result;
+      equationValue = "";
       updateDisplay();
       resetCalculator();
       return;
@@ -101,19 +131,22 @@ function handleOperator(nextOperator) {
 
     displayValue = String(roundResult(result));
     firstOperand = displayValue;
-    updateDisplay();
+    equationValue += displayValue + displaySymbol;
   }
 
   waitingForSecondOperand = true;
   currentOperator = nextOperator;
+  updateDisplay();
 }
 
 function handleEquals() {
-  if (currentOperator === null || waitingForSecondOperand) {
+  if (currentOperator === null || waitingForSecondOperand || isEvaluated) {
     return;
   }
 
   const result = operate(currentOperator, firstOperand, displayValue);
+
+  equationValue += displayValue + "=";
 
   if (typeof result === "string") {
     displayValue = result;
@@ -126,6 +159,7 @@ function handleEquals() {
   firstOperand = null;
   currentOperator = null;
   waitingForSecondOperand = true;
+  isEvaluated = true;
   updateDisplay();
 }
 
@@ -134,6 +168,8 @@ function resetCalculator() {
   firstOperand = null;
   currentOperator = null;
   waitingForSecondOperand = false;
+  equationValue = "";
+  isEvaluated = false;
 }
 
 function handleClear() {
@@ -142,7 +178,7 @@ function handleClear() {
 }
 
 function handleBackspace() {
-  if (waitingForSecondOperand) return;
+  if (waitingForSecondOperand || isEvaluated) return;
   if (displayValue.length > 1) {
     displayValue = displayValue.slice(0, -1);
   } else {
@@ -151,7 +187,6 @@ function handleBackspace() {
   updateDisplay();
 }
 
-// button listeners
 document.querySelectorAll(".btn.num").forEach((button) => {
   button.addEventListener("click", () => {
     inputNumber(button.getAttribute("data-num"));
@@ -164,12 +199,18 @@ document.querySelectorAll(".btn.op").forEach((button) => {
   });
 });
 
-document.getElementById("decimal").addEventListener("click", inputDecimal);
-document.getElementById("clear").addEventListener("click", handleClear);
-document.getElementById("backspace").addEventListener("click", handleBackspace);
-document.getElementById("equals").addEventListener("click", handleEquals);
+const decBtn = document.getElementById("decimal");
+if (decBtn) decBtn.addEventListener("click", inputDecimal);
 
-// keyboard inputs
+const clrBtn = document.getElementById("clear");
+if (clrBtn) clrBtn.addEventListener("click", handleClear);
+
+const backBtn = document.getElementById("backspace");
+if (backBtn) backBtn.addEventListener("click", handleBackspace);
+
+const eqBtn = document.getElementById("equals");
+if (eqBtn) eqBtn.addEventListener("click", handleEquals);
+
 window.addEventListener("keydown", (e) => {
   if (e.key >= "0" && e.key <= "9") {
     inputNumber(e.key);
